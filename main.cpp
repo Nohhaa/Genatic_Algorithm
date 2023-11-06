@@ -14,11 +14,7 @@ float RandomDecimal()
 {
 
     std::mt19937 rng(std::random_device{}());
-
-    // Create a uniform real distribution in the range [0, 1]
     std::uniform_real_distribution<float> dist(0.0f, 1.0f);
-
-    // Generate a random float between 0 and 1
     float randomFloat = dist(rng);
     return randomFloat;
 }
