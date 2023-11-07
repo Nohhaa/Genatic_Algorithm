@@ -11,7 +11,7 @@ int Random01()
     uniform_int_distribution<int> distribution(0, 1);
     return distribution(gen);
 }
-int Random0To1()
+double Random0To1()
 {
     random_device rd;
     mt19937 gen(rd());
@@ -118,12 +118,13 @@ vector<int> Selection(vector<pair<int, int>> &Fitness, int NumberOfChromosomes)
 }
 vector<vector<int>> Crossover(vector<int> Selected, vector<vector<int>> Chromosomes, int length)
 {
-    vector<vector<int>> Children(SelectedChromosomes);
+    vector<vector<int>> Children(SelectedChromosomes,vector<int>(length));
     int CrossPoint = Random1l(length);
-    for (int i = 0; i < SelectedChromosomes; i++)
+   for (int i = 0; i < SelectedChromosomes; i++)
     {
         Children[i] = Chromosomes[Selected[i]];
     }
+
     int index = 0;
     while (index < SelectedChromosomes)
     {
@@ -137,7 +138,7 @@ vector<vector<int>> Crossover(vector<int> Selected, vector<vector<int>> Chromoso
     return Children;
 }
 
-vector<vector<int>> BitFlip_Mutation(vector<vector<int>> Children, int length,int MutationFactor)
+vector<vector<int>> BitFlip_Mutation(vector<vector<int>> Children, int length,double MutationFactor)
 {
 
     for (int i = 0; i < 4; i++)
@@ -145,8 +146,10 @@ vector<vector<int>> BitFlip_Mutation(vector<vector<int>> Children, int length,in
         for (int j = 0; j < length; j++)
         {
             double random=Random0To1();
+
             if (random < MutationFactor) {
-                Children[i][j] = 1-Children[i][j];
+
+                 Children[i][j] = 1-Children[i][j];
             }
 
         }
@@ -156,22 +159,25 @@ vector<vector<int>> BitFlip_Mutation(vector<vector<int>> Children, int length,in
 vector<vector<int>> Feasability(vector<vector<int>> Children,vector<vector<int>> Chromosomes,int num,vector<int> &Weight, vector<int> &Value, int size) {
 
     int Totalweight = 0;
+    vector<vector<int>> newChromosomes=Chromosomes;
     for (int j = 0; j < SelectedChromosomes; j++) {
         for (int i = 0; i < num; ++i) {
             if (Children[j][i] == 1) {
 
                 Totalweight += Weight[i];
+
             }
         }
 
         if (Totalweight <= size)
         {
-            Chromosomes.push_back(Children[j]);
+            newChromosomes.push_back(Children[j]);
 
         }
+         Totalweight = 0;
 
     }
-    return Chromosomes;
+    return newChromosomes;
 }
 
 vector<vector<int>> Elitism_Replacement(vector<vector<int>> population, vector<int> &Weight, vector<int> &Value, int size, int length,int Elite,int NumberOfChromosomes,int num)
@@ -216,31 +222,59 @@ int main()
             Weight.push_back(w);
             Value.push_back(v);
         }
-        for (int i = 0; i < num; i++) {
 
-            cout<<Weight[i]<<endl;
-            cout<<Value[i]<<endl;
-        }
 
         vector<vector<int>> Chromosomes(6, vector<int>(num));
         Chromosomes = Init_Chromosome(num);
+
+        vector<pair<int, int>> Fitness;
+        Get_Fitness(Chromosomes, Weight, Value, size, Fitness, num);
         for (int j = 0; j < 6; j++) {
             for (int i = 0; i < num; ++i) {
                 cout << Chromosomes[j][i] << " ";
             }
             cout << endl;
         }
-        vector<pair<int, int>> Fitness;
-        Get_Fitness(Chromosomes, Weight, Value, size, Fitness, num);
-
+        cout<<"fitness"<<endl;
         for (auto ch: Fitness) {
             cout << ch.first << " "<<ch.second<<endl;
         }
         cout << endl;
         vector<int> Selected;
-        Selection(Fitness, 6);
+        cout<<"selected"<<endl;
+        Selected=Selection(Fitness, 6);
         for (auto ch: Selected)
             cout << ch << " ";
+        cout<<endl;
+        cout<<"crossed"<<endl;
+        vector<vector<int>> Cross;
+        Cross= Crossover(Selected,Chromosomes,num);
+        for (int j = 0; j < 4; j++) {
+            for (int i = 0; i < num; ++i) {
+                cout << Cross[j][i] << " ";
+            }
+            cout << endl;
+        }
+        cout << endl;
+        cout<<"Mutated"<<endl;
+        vector<vector<int>> mutated;
+        mutated= BitFlip_Mutation(Cross,num,0.5);
+        for (int j = 0; j < 4; j++) {
+            for (int i = 0; i < num; ++i) {
+                cout << mutated[j][i] << " ";
+            }
+            cout << endl;
+        }
+        cout << endl;
+        Chromosomes= Feasability(mutated,Chromosomes,num,Weight,Value,size);
+        for (int j = 0; j <Chromosomes.size() ; j++) {
+            for (int i = 0; i < num; ++i) {
+                cout << Chromosomes[j][i] << " ";
+            }
+            cout << endl;
+        }
+        cout << endl;
+
     }
     inputFile.close();
     return 0;
