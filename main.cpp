@@ -1,5 +1,6 @@
 #include <iostream>
 #include <random>
+#include <utility>
 #include <bits/stdc++.h>
 using namespace std;
 const int ChromosomesNumber = 6;
@@ -180,18 +181,31 @@ vector<vector<int>> Feasability(vector<vector<int>> Children,vector<vector<int>>
     return newChromosomes;
 }
 
-vector<vector<int>> Elitism_Replacement(vector<vector<int>> population, vector<int> &Weight, vector<int> &Value, int size, int length,int Elite,int NumberOfChromosomes,int num)
+vector<vector<int>> Elitism_Replacement(vector<vector<int>> population, vector<int> &Weight, vector<int> &Value, int size,int Elite,int num)
 {
     vector<pair<int, int>> Fitness;
     Get_Fitness(population, Weight, Value, size, Fitness, num);
-    sort(Fitness.begin(), Fitness.end());
-    vector<vector<int>> NewGeneration(NumberOfChromosomes);
-    for (int i = 0; i < Elite; ++i) {
-        NewGeneration.push_back(population[Fitness[i].second]);
+
+    sort(Fitness.begin(), Fitness.end(),greater<pair<int, int>>());
+    cout<<"fitness"<<endl;
+    for (auto ch: Fitness) {
+        cout << ch.first << " "<<ch.second<<endl;
     }
-    while (NewGeneration.size() < ChromosomesNumber) {
+    cout << endl;
+    vector<vector<int>> NewGeneration(ChromosomesNumber,vector<int>(num));
+    for (int i = 0; i <Elite; ++i) {
+        NewGeneration[i]=(population[Fitness[i].second]);
+    }
+    for (int j = 0; j <Elite ; j++) {
+        for (int i = 0; i < num; ++i) {
+            cout << NewGeneration[j][i] << " ";
+        }
+        cout << endl;
+    }
+    cout << endl;
+    for (int i = Elite; i <ChromosomesNumber; ++i) {
         int random = Random0l(ChromosomesNumber);
-        NewGeneration.push_back(population[Fitness[random].second]);
+        NewGeneration[i]=(population[Fitness[random].second]);
     }
 
 
@@ -270,6 +284,15 @@ int main()
         for (int j = 0; j <Chromosomes.size() ; j++) {
             for (int i = 0; i < num; ++i) {
                 cout << Chromosomes[j][i] << " ";
+            }
+            cout << endl;
+        }
+        cout << endl;
+        vector<vector<int>> newPop;
+        newPop= Elitism_Replacement(Chromosomes,Weight,Value,size,4,num);
+        for (int j = 0; j <6 ; j++) {
+            for (int i = 0; i < num; ++i) {
+                cout << newPop[j][i] << " ";
             }
             cout << endl;
         }
