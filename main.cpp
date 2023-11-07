@@ -2,7 +2,8 @@
 #include <random>
 #include <bits/stdc++.h>
 using namespace std;
-
+const int ChromosomesNumber = 6;
+const int SelectedChromosomes = 4;
 int Random01()
 {
     random_device rd;
@@ -31,7 +32,7 @@ vector<int> Init_Chromosome(int length)
 void Get_Fitness(vector<vector<int>> &Chromosomes, vector<int> &Weight, vector<int> &Value, int size, vector<pair<int, int>> Fitness, int num)
 {
     int TotalFitness = 0, Totalweight = 0;
-    for (int j = 0; j < 6; j++)
+    for (int j = 0; j < ChromosomesNumber; j++)
     {
         for (int i = 0; i < num; ++i)
         {
@@ -45,8 +46,9 @@ void Get_Fitness(vector<vector<int>> &Chromosomes, vector<int> &Weight, vector<i
         {
             for (int i = 0; i < num; ++i)
             {
-                if (Chromosomes[j][i] == 1)
+                if (Chromosomes[j][i])
                 {
+                    Chromosomes[j][i] = 0;
                     TotalFitness -= Value[i];
                     Totalweight -= Weight[i];
                 }
@@ -73,7 +75,7 @@ vector<int> Selection(vector<pair<int, int>> &Fitness, int NumberOfChromosomes)
     {
         CumulativeSum[i] = Normalization[i] + CumulativeSum[i - 1];
     }
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < SelectedChromosomes; i++)
     {
         float RandomNum = RandomDecimal();
         for (int i = 0; i < CumulativeSum.size(); i++)
@@ -87,6 +89,26 @@ vector<int> Selection(vector<pair<int, int>> &Fitness, int NumberOfChromosomes)
         }
     }
     return Selected;
+}
+vector<vector<int>> Cross_Over(vector<int> Selected, vector<vector<int>> Chromosomes, int length)
+{
+    vector<vector<int>> Children(SelectedChromosomes);
+    int CrossPoint = length / 2;
+    for (int i = 0; i < SelectedChromosomes; i++)
+    {
+        Children[i] = Chromosomes[Selected[i]];
+    }
+    int index = 0;
+    while (index < SelectedChromosomes)
+    {
+
+        for (int i = CrossPoint; i < length; i++)
+        {
+            swap(Children[index][i], Children[index + 1][i]);
+        }
+        index += 2;
+    }
+    return Children;
 }
 int main()
 {
