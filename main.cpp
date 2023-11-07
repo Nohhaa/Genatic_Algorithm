@@ -57,8 +57,9 @@ void Get_Fitness(vector<vector<int>> &Chromosomes, vector<int> &Weight, vector<i
         Totalweight = 0;
     }
 }
-void Selection(vector<pair<int, int>> &Fitness, vector<int> &Selected, int NumberOfChromosomes)
+vector<int> Selection(vector<pair<int, int>> &Fitness, int NumberOfChromosomes)
 {
+    vector<int> Selected;
     sort(Fitness.begin(), Fitness.end());
     vector<float> Normalization(NumberOfChromosomes);
     vector<float> CumulativeSum(NumberOfChromosomes);
@@ -80,11 +81,12 @@ void Selection(vector<pair<int, int>> &Fitness, vector<int> &Selected, int Numbe
             if (RandomNum < CumulativeSum[i])
             {
 
-                Selected.push_back(i + 1);
+                Selected.push_back(i);
                 break;
             }
         }
     }
+    return Selected;
 }
 int main()
 {
