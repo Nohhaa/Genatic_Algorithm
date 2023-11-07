@@ -40,13 +40,15 @@ float RandomDecimal()
     float randomFloat = dist(rng);
     return randomFloat;
 }
-vector<int> Init_Chromosome(int length)
+vector<vector<int>> Init_Chromosome(int length)
 {
-    vector<int> Chromosome;
-    for (int i = 0; i < length; ++i)
-    {
-        int RandomNumber = Random01();
-        Chromosome[i] = RandomNumber;
+    vector<vector<int>> Chromosome(ChromosomesNumber,vector<int>(length));
+    for (int j = 0; j < ChromosomesNumber; j++) {
+
+        for (int i = 0; i < length; ++i) {
+            int RandomNumber = Random01();
+            Chromosome[j][i] = RandomNumber;
+        }
     }
     return Chromosome;
 }
@@ -63,10 +65,11 @@ void Get_Fitness(vector<vector<int>> &Chromosomes, vector<int> &Weight, vector<i
                 Totalweight += Weight[i];
             }
         }
-        while (Totalweight > size)
-        {
+
             for (int i = 0; i < num; ++i)
             {
+                if (Totalweight > size)
+                {
                 if (Chromosomes[j][i])
                 {
                     Chromosomes[j][i] = 0;
@@ -74,6 +77,8 @@ void Get_Fitness(vector<vector<int>> &Chromosomes, vector<int> &Weight, vector<i
                     Totalweight -= Weight[i];
                 }
             }
+                else
+                {break;}
         }
         Fitness.push_back({TotalFitness, j});
         TotalFitness = 0;
@@ -189,53 +194,54 @@ vector<vector<int>> Elitism_Replacement(vector<vector<int>> population, vector<i
 
 int main()
 {
-    ifstream inputFile("input.txt");
+    ifstream inputFile("C:\\Users\\MBR\\OneDrive\\Desktop\\input.txt");
 
     if (!inputFile.is_open()) {
-        cerr << "Failed to open the input file." << std::endl;
+        cerr << "Failed to open the input file." << endl;
         return 1;
     }
 
     int Test, size, num, w, v, x, n;
     inputFile >>Test;
-    while (Test--)
-    {
+    while (Test--) {
         inputFile >> size;
         inputFile >> num;
 
         vector<int> Weight;
         vector<int> Value;
 
-        for (int i = 0; i < num; i++)
-        {
+        for (int i = 0; i < num; i++) {
             inputFile >> w;
             inputFile >> v;
             Weight.push_back(w);
             Value.push_back(v);
         }
+        for (int i = 0; i < num; i++) {
+
+            cout<<Weight[i]<<endl;
+            cout<<Value[i]<<endl;
+        }
+
+        vector<vector<int>> Chromosomes(6, vector<int>(num));
+        Chromosomes = Init_Chromosome(num);
+        for (int j = 0; j < 6; j++) {
+            for (int i = 0; i < num; ++i) {
+                cout << Chromosomes[j][i] << " ";
+            }
+            cout << endl;
+        }
+        vector<pair<int, int>> Fitness;
+        Get_Fitness(Chromosomes, Weight, Value, size, Fitness, num);
+
+        for (auto ch: Fitness) {
+            cout << ch.first << " "<<ch.second<<endl;
+        }
+        cout << endl;
+        vector<int> Selected;
+        Selection(Fitness, 6);
+        for (auto ch: Selected)
+            cout << ch << " ";
     }
-    /* vector<vector<int>> Chromosomes(6, vector<int>(n));
-     Init_Chromosome(Chromosomes, num);
-     vector<pair<int, int>> Fitness;
-     Get_Fitness(Chromosomes, Weight, Value, size, Fitness, num);
-     for (int j = 0; j < 6; j++)
-     {
-         for (int i = 0; i < num; ++i)
-         {
-             cout << Chromosomes[j][i] << " ";
-         }
-         cout << endl;
-     }
-     for (auto ch : Fitness)
-     {
-         cout << ch.first << " ";
-     }
-     cout << endl;
-     vector<int> Selected;
-     Selection(Fitness, Selected, 6);
-     for (auto ch : Selected)
-         cout << ch << " ";
- }*/
     inputFile.close();
     return 0;
 }
