@@ -11,11 +11,32 @@ int Random01()
     uniform_int_distribution<int> distribution(0, 1);
     return distribution(gen);
 }
+int Random0To1()
+{
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_real_distribution<double> distribution(0.0, 1.0);
+    return distribution(gen);
+}
+int Random1l(int length)
+{
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_int_distribution<int> distribution(1, length-1);
+    return distribution(gen);
+}
+int Random0l(int length)
+{
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_int_distribution<int> distribution(0, length-1);
+    return distribution(gen);
+}
 float RandomDecimal()
 {
 
-    std::mt19937 rng(std::random_device{}());
-    std::uniform_real_distribution<float> dist(0.0f, 1.0f);
+    mt19937 rng(random_device{}());
+    uniform_real_distribution<float> dist(0.0f, 1.0f);
     float randomFloat = dist(rng);
     return randomFloat;
 }
@@ -29,7 +50,7 @@ vector<int> Init_Chromosome(int length)
     }
     return Chromosome;
 }
-void Get_Fitness(vector<vector<int>> &Chromosomes, vector<int> &Weight, vector<int> &Value, int size, vector<pair<int, int>> Fitness, int num)
+void Get_Fitness(vector<vector<int>> &Chromosomes, vector<int> &Weight, vector<int> &Value, int size, vector<pair<int, int>> &Fitness, int num)
 {
     int TotalFitness = 0, Totalweight = 0;
     for (int j = 0; j < ChromosomesNumber; j++)
@@ -90,10 +111,10 @@ vector<int> Selection(vector<pair<int, int>> &Fitness, int NumberOfChromosomes)
     }
     return Selected;
 }
-vector<vector<int>> Cross_Over(vector<int> Selected, vector<vector<int>> Chromosomes, int length)
+vector<vector<int>> Crossover(vector<int> Selected, vector<vector<int>> Chromosomes, int length)
 {
     vector<vector<int>> Children(SelectedChromosomes);
-    int CrossPoint = length / 2;
+    int CrossPoint = Random1l(length);
     for (int i = 0; i < SelectedChromosomes; i++)
     {
         Children[i] = Chromosomes[Selected[i]];
@@ -110,23 +131,85 @@ vector<vector<int>> Cross_Over(vector<int> Selected, vector<vector<int>> Chromos
     }
     return Children;
 }
-int main()
+
+vector<vector<int>> BitFlip_Mutation(vector<vector<int>> Children, int length,int MutationFactor)
 {
 
+    for (int i = 0; i < 4; i++)
+    {
+        for (int j = 0; j < length; j++)
+        {
+            double random=Random0To1();
+            if (random < MutationFactor) {
+                Children[i][j] = 1-Children[i][j];
+            }
+
+        }
+    }
+    return Children;
+}
+vector<vector<int>> Feasability(vector<vector<int>> Children,vector<vector<int>> Chromosomes,int num,vector<int> &Weight, vector<int> &Value, int size) {
+
+    int Totalweight = 0;
+    for (int j = 0; j < SelectedChromosomes; j++) {
+        for (int i = 0; i < num; ++i) {
+            if (Children[j][i] == 1) {
+
+                Totalweight += Weight[i];
+            }
+        }
+
+        if (Totalweight <= size)
+        {
+            Chromosomes.push_back(Children[j]);
+
+        }
+
+    }
+    return Chromosomes;
+}
+
+vector<vector<int>> Elitism_Replacement(vector<vector<int>> population, vector<int> &Weight, vector<int> &Value, int size, int length,int Elite,int NumberOfChromosomes,int num)
+{
+    vector<pair<int, int>> Fitness;
+    Get_Fitness(population, Weight, Value, size, Fitness, num);
+    sort(Fitness.begin(), Fitness.end());
+    vector<vector<int>> NewGeneration(NumberOfChromosomes);
+    for (int i = 0; i < Elite; ++i) {
+        NewGeneration.push_back(population[Fitness[i].second]);
+    }
+    while (NewGeneration.size() < ChromosomesNumber) {
+        int random = Random0l(ChromosomesNumber);
+        NewGeneration.push_back(population[Fitness[random].second]);
+    }
+
+
+  return NewGeneration;
+}
+
+int main()
+{
+    ifstream inputFile("input.txt");
+
+    if (!inputFile.is_open()) {
+        cerr << "Failed to open the input file." << std::endl;
+        return 1;
+    }
+
     int Test, size, num, w, v, x, n;
-    cin >> Test;
+    inputFile >>Test;
     while (Test--)
     {
-        cin >> size;
-        cin >> num;
+        inputFile >> size;
+        inputFile >> num;
 
         vector<int> Weight;
         vector<int> Value;
 
         for (int i = 0; i < num; i++)
         {
-            cin >> w;
-            cin >> v;
+            inputFile >> w;
+            inputFile >> v;
             Weight.push_back(w);
             Value.push_back(v);
         }
@@ -153,6 +236,6 @@ int main()
      for (auto ch : Selected)
          cout << ch << " ";
  }*/
-
+    inputFile.close();
     return 0;
 }
