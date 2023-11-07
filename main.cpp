@@ -18,18 +18,17 @@ float RandomDecimal()
     float randomFloat = dist(rng);
     return randomFloat;
 }
-void Init_Chromosome(vector<vector<int>> &Chromosome, int num)
+vector<int> Init_Chromosome(int length)
 {
-    for (int j = 0; j < 6; j++)
+    vector<int> Chromosome;
+    for (int i = 0; i < length; ++i)
     {
-        for (int i = 0; i < num; ++i)
-        {
-            int RandomNumber = Random01();
-            Chromosome[j][i] = RandomNumber;
-        }
+        int RandomNumber = Random01();
+        Chromosome[i] = RandomNumber;
     }
+    return Chromosome;
 }
-void Get_Fitness(vector<vector<int>> &Chromosomes, vector<int> &Weight, vector<int> &Value, int size, vector<pair<int, int>> &Fitness, int num)
+void Get_Fitness(vector<vector<int>> &Chromosomes, vector<int> &Weight, vector<int> &Value, int size, vector<pair<int, int>> Fitness, int num)
 {
     int TotalFitness = 0, Totalweight = 0;
     for (int j = 0; j < 6; j++)
@@ -42,9 +41,16 @@ void Get_Fitness(vector<vector<int>> &Chromosomes, vector<int> &Weight, vector<i
                 Totalweight += Weight[i];
             }
         }
-        if (Totalweight > size)
+        while (Totalweight > size)
         {
-            TotalFitness = 0;
+            for (int i = 0; i < num; ++i)
+            {
+                if (Chromosomes[j][i] == 1)
+                {
+                    TotalFitness -= Value[i];
+                    Totalweight -= Weight[i];
+                }
+            }
         }
         Fitness.push_back({TotalFitness, j});
         TotalFitness = 0;
@@ -56,10 +62,10 @@ void Selection(vector<pair<int, int>> &Fitness, vector<int> &Selected, int Numbe
     sort(Fitness.begin(), Fitness.end());
     vector<float> Normalization(NumberOfChromosomes);
     vector<float> CumulativeSum(NumberOfChromosomes);
-    float Sum = NumberOfChromosomes * (NumberOfChromosomes + 1) / 2*1.0;
+    float Sum = NumberOfChromosomes * (NumberOfChromosomes + 1) / 2 * 1.0;
     for (int i = 0; i < NumberOfChromosomes; i++)
     {
-        Normalization[Fitness[i].second] = (i + 1 ) * 1.0/ Sum * 1.0;
+        Normalization[Fitness[i].second] = (i + 1) * 1.0 / Sum * 1.0;
     }
     CumulativeSum[0] = Normalization[0];
     for (int i = 1; i < NumberOfChromosomes; i++)
@@ -73,8 +79,8 @@ void Selection(vector<pair<int, int>> &Fitness, vector<int> &Selected, int Numbe
         {
             if (RandomNum < CumulativeSum[i])
             {
-                
-                Selected.push_back(i+1);
+
+                Selected.push_back(i + 1);
                 break;
             }
         }
@@ -100,28 +106,29 @@ int main()
             Weight.push_back(w);
             Value.push_back(v);
         }
-        vector<vector<int>> Chromosomes(6, vector<int>(n));
-        Init_Chromosome(Chromosomes, num);
-        vector<pair<int, int>> Fitness;
-        Get_Fitness(Chromosomes, Weight, Value, size, Fitness, num);
-        for (int j = 0; j < 6; j++)
-        {
-            for (int i = 0; i < num; ++i)
-            {
-                cout << Chromosomes[j][i] << " ";
-            }
-            cout << endl;
-        }
-        for (auto ch : Fitness)
-        {
-            cout << ch.first << " ";
-        }
-        cout<<endl;
-        vector<int> Selected;
-        Selection(Fitness , Selected , 6);
-        for(auto ch : Selected)
-            cout<<ch<<" ";
     }
+    /* vector<vector<int>> Chromosomes(6, vector<int>(n));
+     Init_Chromosome(Chromosomes, num);
+     vector<pair<int, int>> Fitness;
+     Get_Fitness(Chromosomes, Weight, Value, size, Fitness, num);
+     for (int j = 0; j < 6; j++)
+     {
+         for (int i = 0; i < num; ++i)
+         {
+             cout << Chromosomes[j][i] << " ";
+         }
+         cout << endl;
+     }
+     for (auto ch : Fitness)
+     {
+         cout << ch.first << " ";
+     }
+     cout << endl;
+     vector<int> Selected;
+     Selection(Fitness, Selected, 6);
+     for (auto ch : Selected)
+         cout << ch << " ";
+ }*/
 
     return 0;
 }
