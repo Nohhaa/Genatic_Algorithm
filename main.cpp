@@ -192,26 +192,11 @@ vector<vector<int>> Elitism_Replacement(vector<vector<int>> population, vector<i
     Get_Fitness(population, Weight, Value, size, Fitness, num);
 
     sort(Fitness.begin(), Fitness.end(), greater<pair<int, int>>());
-    cout << "fitness" << endl;
-    for (auto ch : Fitness)
-    {
-        cout << ch.first << " " << ch.second << endl;
-    }
-    cout << endl;
     vector<vector<int>> NewGeneration(ChromosomesNumber, vector<int>(num));
     for (int i = 0; i < Elite; ++i)
     {
         NewGeneration[i] = (population[Fitness[i].second]);
     }
-    for (int j = 0; j < Elite; j++)
-    {
-        for (int i = 0; i < num; ++i)
-        {
-            cout << NewGeneration[j][i] << " ";
-        }
-        cout << endl;
-    }
-    cout << endl;
     for (int i = Elite; i < ChromosomesNumber; ++i)
     {
         int random = Random0l(ChromosomesNumber);
@@ -223,7 +208,7 @@ vector<vector<int>> Elitism_Replacement(vector<vector<int>> population, vector<i
 
 int main()
 {
-    ifstream inputFile("C:\\Users\\MBR\\OneDrive\\Desktop\\input.txt");
+    ifstream inputFile("knapsack_input.txt");
 
     if (!inputFile.is_open())
     {
@@ -233,6 +218,7 @@ int main()
 
     int Test, size, num, w, v, x, n;
     inputFile >> Test;
+    int Counter = 1;
     while (Test--)
     {
         inputFile >> size;
@@ -248,36 +234,81 @@ int main()
             Weight.push_back(w);
             Value.push_back(v);
         }
-
-        vector<vector<int>> Chromosomes(6, vector<int>(num));
+        vector<vector<int>> Chromosomes(ChromosomesNumber, vector<int>(num));
         Chromosomes = Init_Chromosome(num);
+        int Generations = 250;
+        vector<vector<int>> newPop;
+        vector<vector<int>> mutated;
+        vector<vector<int>> Cross;
+        vector<int> Selected;
+        while (Generations--)
+        {
+            vector<pair<int, int>> Fitness;
+            Get_Fitness(Chromosomes, Weight, Value, size, Fitness, num);
 
+            Selected = Selection(Fitness, ChromosomesNumber);
+
+            Cross = Crossover(Selected, Chromosomes, num);
+
+            mutated = BitFlip_Mutation(Cross, num, 0.5);
+
+            Chromosomes = Feasability(mutated, Chromosomes, num, Weight, Value, size);
+
+            newPop = Elitism_Replacement(Chromosomes, Weight, Value, size, SelectedChromosomes, num);
+
+            Chromosomes = newPop;
+        }
         vector<pair<int, int>> Fitness;
         Get_Fitness(Chromosomes, Weight, Value, size, Fitness, num);
-        for (int j = 0; j < 6; j++)
+        sort(Fitness.begin(), Fitness.end());
+        int index = Fitness[5].second;
+
+        cout << "Test Case Number : " << Counter++ << endl;
+        cout << "Total Value : " << Fitness[5].first << endl;
+        int NumberOfChoosen = 0;
+        int TotalWeight = 0;
+        for (int i = 0; i < num; i++)
         {
-            for (int i = 0; i < num; ++i)
+            if (Chromosomes[index][i])
             {
-                cout << Chromosomes[j][i] << " ";
+                NumberOfChoosen++;
+                TotalWeight += Weight[i];
             }
-            cout << endl;
         }
-        cout << "fitness" << endl;
-        for (auto ch : Fitness)
+        cout << "Number Of Choosen Items : " << NumberOfChoosen << endl;
+        cout << "Total Weight : " << TotalWeight << endl;
+        for (int i = 0; i < num; i++)
         {
-            cout << ch.first << " " << ch.second << endl;
+            if (Chromosomes[index][i])
+            {
+                cout << "Item Number " << i + 1 << " : " << endl;
+                cout << "Weight : " << Weight[i] << " "
+                     << "Value : " << Value[i] << endl;
+            }
         }
         cout << endl;
-        vector<int> Selected;
-        cout << "selected" << endl;
-        Selected = Selection(Fitness, 6);
+        cout << " ----------------------------------- " << endl;
+        /*for (int j = 0; j < ChromosomesNumber; j++)
+         {
+             for (int i = 0; i < num; ++i)
+             {
+                 cout << Chromosomes[j][i] << " ";
+             }
+             cout << endl;
+         }
+         cout << "fitness" << endl;
+         for (auto ch : Fitness)
+         {
+             cout << ch.first << " " << ch.second << endl;
+         }*/
+        /*cout << endl;
+
         for (auto ch : Selected)
             cout << ch << " ";
         cout << endl;
         cout << "crossed" << endl;
-        vector<vector<int>> Cross;
-        Cross = Crossover(Selected, Chromosomes, num);
-        for (int j = 0; j < 4; j++)
+
+        for (int j = 0; j < SelectedChromosomes; j++)
         {
             for (int i = 0; i < num; ++i)
             {
@@ -287,9 +318,8 @@ int main()
         }
         cout << endl;
         cout << "Mutated" << endl;
-        vector<vector<int>> mutated;
-        mutated = BitFlip_Mutation(Cross, num, 0.5);
-        for (int j = 0; j < 4; j++)
+
+        for (int j = 0; j < SelectedChromosomes; j++)
         {
             for (int i = 0; i < num; ++i)
             {
@@ -298,7 +328,7 @@ int main()
             cout << endl;
         }
         cout << endl;
-        Chromosomes = Feasability(mutated, Chromosomes, num, Weight, Value, size);
+
         for (int j = 0; j < Chromosomes.size(); j++)
         {
             for (int i = 0; i < num; ++i)
@@ -308,9 +338,8 @@ int main()
             cout << endl;
         }
         cout << endl;
-        vector<vector<int>> newPop;
-        newPop = Elitism_Replacement(Chromosomes, Weight, Value, size, 4, num);
-        for (int j = 0; j < 6; j++)
+
+        for (int j = 0; j < ChromosomesNumber; j++)
         {
             for (int i = 0; i < num; ++i)
             {
@@ -318,7 +347,7 @@ int main()
             }
             cout << endl;
         }
-        cout << endl;
+        cout << endl; */
     }
     inputFile.close();
     return 0;

@@ -3,6 +3,8 @@
         "ratio": "cpp",
         "bitset": "cpp",
         "string_view": "cpp",
-        "regex": "cpp"
+        "regex": "cpp",
+        "new": "cpp",
+        "ostream": "cpp"
     }
 }
