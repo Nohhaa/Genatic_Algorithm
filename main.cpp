@@ -23,14 +23,14 @@ int Random1l(int length)
 {
     random_device rd;
     mt19937 gen(rd());
-    uniform_int_distribution<int> distribution(1, length-1);
+    uniform_int_distribution<int> distribution(1, length - 1);
     return distribution(gen);
 }
 int Random0l(int length)
 {
     random_device rd;
     mt19937 gen(rd());
-    uniform_int_distribution<int> distribution(0, length-1);
+    uniform_int_distribution<int> distribution(0, length - 1);
     return distribution(gen);
 }
 float RandomDecimal()
@@ -43,10 +43,12 @@ float RandomDecimal()
 }
 vector<vector<int>> Init_Chromosome(int length)
 {
-    vector<vector<int>> Chromosome(ChromosomesNumber,vector<int>(length));
-    for (int j = 0; j < ChromosomesNumber; j++) {
+    vector<vector<int>> Chromosome(ChromosomesNumber, vector<int>(length));
+    for (int j = 0; j < ChromosomesNumber; j++)
+    {
 
-        for (int i = 0; i < length; ++i) {
+        for (int i = 0; i < length; ++i)
+        {
             int RandomNumber = Random01();
             Chromosome[j][i] = RandomNumber;
         }
@@ -67,10 +69,10 @@ void Get_Fitness(vector<vector<int>> &Chromosomes, vector<int> &Weight, vector<i
             }
         }
 
-            for (int i = 0; i < num; ++i)
+        for (int i = 0; i < num; ++i)
+        {
+            if (Totalweight > size)
             {
-                if (Totalweight > size)
-                {
                 if (Chromosomes[j][i])
                 {
                     Chromosomes[j][i] = 0;
@@ -78,8 +80,10 @@ void Get_Fitness(vector<vector<int>> &Chromosomes, vector<int> &Weight, vector<i
                     Totalweight -= Weight[i];
                 }
             }
-                else
-                {break;}
+            else
+            {
+                break;
+            }
         }
         Fitness.push_back({TotalFitness, j});
         TotalFitness = 0;
@@ -119,9 +123,9 @@ vector<int> Selection(vector<pair<int, int>> &Fitness, int NumberOfChromosomes)
 }
 vector<vector<int>> Crossover(vector<int> Selected, vector<vector<int>> Chromosomes, int length)
 {
-    vector<vector<int>> Children(SelectedChromosomes,vector<int>(length));
+    vector<vector<int>> Children(SelectedChromosomes, vector<int>(length));
     int CrossPoint = Random1l(length);
-   for (int i = 0; i < SelectedChromosomes; i++)
+    for (int i = 0; i < SelectedChromosomes; i++)
     {
         Children[i] = Chromosomes[Selected[i]];
     }
@@ -139,165 +143,182 @@ vector<vector<int>> Crossover(vector<int> Selected, vector<vector<int>> Chromoso
     return Children;
 }
 
-vector<vector<int>> BitFlip_Mutation(vector<vector<int>> Children, int length,double MutationFactor)
+vector<vector<int>> BitFlip_Mutation(vector<vector<int>> Children, int length, double MutationFactor)
 {
 
     for (int i = 0; i < 4; i++)
     {
         for (int j = 0; j < length; j++)
         {
-            double random=Random0To1();
+            double random = Random0To1();
 
-            if (random < MutationFactor) {
+            if (random < MutationFactor)
+            {
 
-                 Children[i][j] = 1-Children[i][j];
+                Children[i][j] = 1 - Children[i][j];
             }
-
         }
     }
     return Children;
 }
-vector<vector<int>> Feasability(vector<vector<int>> Children,vector<vector<int>> Chromosomes,int num,vector<int> &Weight, vector<int> &Value, int size) {
+vector<vector<int>> Feasability(vector<vector<int>> Children, vector<vector<int>> Chromosomes, int num, vector<int> &Weight, vector<int> &Value, int size)
+{
 
     int Totalweight = 0;
-    vector<vector<int>> newChromosomes=Chromosomes;
-    for (int j = 0; j < SelectedChromosomes; j++) {
-        for (int i = 0; i < num; ++i) {
-            if (Children[j][i] == 1) {
+    vector<vector<int>> newChromosomes = Chromosomes;
+    for (int j = 0; j < SelectedChromosomes; j++)
+    {
+        for (int i = 0; i < num; ++i)
+        {
+            if (Children[j][i] == 1)
+            {
 
                 Totalweight += Weight[i];
-
             }
         }
 
         if (Totalweight <= size)
         {
             newChromosomes.push_back(Children[j]);
-
         }
-         Totalweight = 0;
-
+        Totalweight = 0;
     }
     return newChromosomes;
 }
 
-vector<vector<int>> Elitism_Replacement(vector<vector<int>> population, vector<int> &Weight, vector<int> &Value, int size,int Elite,int num)
+vector<vector<int>> Elitism_Replacement(vector<vector<int>> population, vector<int> &Weight, vector<int> &Value, int size, int Elite, int num)
 {
     vector<pair<int, int>> Fitness;
     Get_Fitness(population, Weight, Value, size, Fitness, num);
 
-    sort(Fitness.begin(), Fitness.end(),greater<pair<int, int>>());
-    cout<<"fitness"<<endl;
-    for (auto ch: Fitness) {
-        cout << ch.first << " "<<ch.second<<endl;
+    sort(Fitness.begin(), Fitness.end(), greater<pair<int, int>>());
+    cout << "fitness" << endl;
+    for (auto ch : Fitness)
+    {
+        cout << ch.first << " " << ch.second << endl;
     }
     cout << endl;
-    vector<vector<int>> NewGeneration(ChromosomesNumber,vector<int>(num));
-    for (int i = 0; i <Elite; ++i) {
-        NewGeneration[i]=(population[Fitness[i].second]);
+    vector<vector<int>> NewGeneration(ChromosomesNumber, vector<int>(num));
+    for (int i = 0; i < Elite; ++i)
+    {
+        NewGeneration[i] = (population[Fitness[i].second]);
     }
-    for (int j = 0; j <Elite ; j++) {
-        for (int i = 0; i < num; ++i) {
+    for (int j = 0; j < Elite; j++)
+    {
+        for (int i = 0; i < num; ++i)
+        {
             cout << NewGeneration[j][i] << " ";
         }
         cout << endl;
     }
     cout << endl;
-    for (int i = Elite; i <ChromosomesNumber; ++i) {
+    for (int i = Elite; i < ChromosomesNumber; ++i)
+    {
         int random = Random0l(ChromosomesNumber);
-        NewGeneration[i]=(population[Fitness[random].second]);
+        NewGeneration[i] = (population[Fitness[random].second]);
     }
 
-
-  return NewGeneration;
+    return NewGeneration;
 }
 
 int main()
 {
     ifstream inputFile("C:\\Users\\MBR\\OneDrive\\Desktop\\input.txt");
 
-    if (!inputFile.is_open()) {
+    if (!inputFile.is_open())
+    {
         cerr << "Failed to open the input file." << endl;
         return 1;
     }
 
     int Test, size, num, w, v, x, n;
-    inputFile >>Test;
-    while (Test--) {
+    inputFile >> Test;
+    while (Test--)
+    {
         inputFile >> size;
         inputFile >> num;
 
         vector<int> Weight;
         vector<int> Value;
 
-        for (int i = 0; i < num; i++) {
+        for (int i = 0; i < num; i++)
+        {
             inputFile >> w;
             inputFile >> v;
             Weight.push_back(w);
             Value.push_back(v);
         }
 
-
         vector<vector<int>> Chromosomes(6, vector<int>(num));
         Chromosomes = Init_Chromosome(num);
 
         vector<pair<int, int>> Fitness;
         Get_Fitness(Chromosomes, Weight, Value, size, Fitness, num);
-        for (int j = 0; j < 6; j++) {
-            for (int i = 0; i < num; ++i) {
+        for (int j = 0; j < 6; j++)
+        {
+            for (int i = 0; i < num; ++i)
+            {
                 cout << Chromosomes[j][i] << " ";
             }
             cout << endl;
         }
-        cout<<"fitness"<<endl;
-        for (auto ch: Fitness) {
-            cout << ch.first << " "<<ch.second<<endl;
+        cout << "fitness" << endl;
+        for (auto ch : Fitness)
+        {
+            cout << ch.first << " " << ch.second << endl;
         }
         cout << endl;
         vector<int> Selected;
-        cout<<"selected"<<endl;
-        Selected=Selection(Fitness, 6);
-        for (auto ch: Selected)
+        cout << "selected" << endl;
+        Selected = Selection(Fitness, 6);
+        for (auto ch : Selected)
             cout << ch << " ";
-        cout<<endl;
-        cout<<"crossed"<<endl;
+        cout << endl;
+        cout << "crossed" << endl;
         vector<vector<int>> Cross;
-        Cross= Crossover(Selected,Chromosomes,num);
-        for (int j = 0; j < 4; j++) {
-            for (int i = 0; i < num; ++i) {
+        Cross = Crossover(Selected, Chromosomes, num);
+        for (int j = 0; j < 4; j++)
+        {
+            for (int i = 0; i < num; ++i)
+            {
                 cout << Cross[j][i] << " ";
             }
             cout << endl;
         }
         cout << endl;
-        cout<<"Mutated"<<endl;
+        cout << "Mutated" << endl;
         vector<vector<int>> mutated;
-        mutated= BitFlip_Mutation(Cross,num,0.5);
-        for (int j = 0; j < 4; j++) {
-            for (int i = 0; i < num; ++i) {
+        mutated = BitFlip_Mutation(Cross, num, 0.5);
+        for (int j = 0; j < 4; j++)
+        {
+            for (int i = 0; i < num; ++i)
+            {
                 cout << mutated[j][i] << " ";
             }
             cout << endl;
         }
         cout << endl;
-        Chromosomes= Feasability(mutated,Chromosomes,num,Weight,Value,size);
-        for (int j = 0; j <Chromosomes.size() ; j++) {
-            for (int i = 0; i < num; ++i) {
+        Chromosomes = Feasability(mutated, Chromosomes, num, Weight, Value, size);
+        for (int j = 0; j < Chromosomes.size(); j++)
+        {
+            for (int i = 0; i < num; ++i)
+            {
                 cout << Chromosomes[j][i] << " ";
             }
             cout << endl;
         }
         cout << endl;
         vector<vector<int>> newPop;
-        newPop= Elitism_Replacement(Chromosomes,Weight,Value,size,4,num);
-        for (int j = 0; j <6 ; j++) {
-            for (int i = 0; i < num; ++i) {
+        newPop = Elitism_Replacement(Chromosomes, Weight, Value, size, 4, num);
+        for (int j = 0; j < 6; j++)
+        {
+            for (int i = 0; i < num; ++i)
+            {
                 cout << newPop[j][i] << " ";
             }
             cout << endl;
         }
         cout << endl;
-
     }
     inputFile.close();
     return 0;
