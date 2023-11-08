@@ -288,66 +288,6 @@ int main()
         }
         cout << endl;
         cout << " ----------------------------------- " << endl;
-        /*for (int j = 0; j < ChromosomesNumber; j++)
-         {
-             for (int i = 0; i < num; ++i)
-             {
-                 cout << Chromosomes[j][i] << " ";
-             }
-             cout << endl;
-         }
-         cout << "fitness" << endl;
-         for (auto ch : Fitness)
-         {
-             cout << ch.first << " " << ch.second << endl;
-         }*/
-        /*cout << endl;
-
-        for (auto ch : Selected)
-            cout << ch << " ";
-        cout << endl;
-        cout << "crossed" << endl;
-
-        for (int j = 0; j < SelectedChromosomes; j++)
-        {
-            for (int i = 0; i < num; ++i)
-            {
-                cout << Cross[j][i] << " ";
-            }
-            cout << endl;
-        }
-        cout << endl;
-        cout << "Mutated" << endl;
-
-        for (int j = 0; j < SelectedChromosomes; j++)
-        {
-            for (int i = 0; i < num; ++i)
-            {
-                cout << mutated[j][i] << " ";
-            }
-            cout << endl;
-        }
-        cout << endl;
-
-        for (int j = 0; j < Chromosomes.size(); j++)
-        {
-            for (int i = 0; i < num; ++i)
-            {
-                cout << Chromosomes[j][i] << " ";
-            }
-            cout << endl;
-        }
-        cout << endl;
-
-        for (int j = 0; j < ChromosomesNumber; j++)
-        {
-            for (int i = 0; i < num; ++i)
-            {
-                cout << newPop[j][i] << " ";
-            }
-            cout << endl;
-        }
-        cout << endl; */
     }
     inputFile.close();
     return 0;
